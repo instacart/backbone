@@ -474,9 +474,9 @@
     location.replace('http://example.com/root/');
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function(state, title, url) {
-          assert.strictEqual(url, '/root/x');
+      __protectedHistory: {
+        push: function(fragment) {
+          assert.strictEqual(fragment, '/x');
         }
       }
     });
@@ -495,9 +495,9 @@
     location.replace('http://example.com/root');
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function(state, title, url) {
-          assert.strictEqual(url, '/root/fragment');
+      __protectedHistory: {
+        push: function(fragment) {
+          assert.strictEqual(fragment, '/fragment');
         }
       }
     });
@@ -515,10 +515,10 @@
     location.replace('http://example.com/root#fragment');
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function(state, title, url) {},
-        replaceState: function(state, title, url) {
-          assert.strictEqual(url, '/root/fragment');
+      __protectedHistory: {
+        push: function(fragment) {},
+        replace: function(fragment) {
+          assert.strictEqual(fragment, '/fragment');
         }
       }
     });
@@ -561,10 +561,10 @@
     location.replace('http://example.com/root#x/y');
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function() {},
-        replaceState: function(state, title, url) {
-          assert.strictEqual(url, '/root/x/y');
+      __protectedHistory: {
+        push: function(fragment) {},
+        replace: function(fragment) {
+          assert.strictEqual(fragment, '/x/y');
         }
       }
     });
@@ -595,9 +595,9 @@
     location.replace('http://example.com/');
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function(state, title, url) {
-          assert.strictEqual(url, '/fragment');
+      __protectedHistory: {
+        push: function(fragment) {
+          assert.strictEqual(fragment, '/fragment');
         }
       }
     });
@@ -635,10 +635,10 @@
     location.replace('http://example.com/root#x/y?a=b');
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function() {},
-        replaceState: function(state, title, url) {
-          assert.strictEqual(url, '/root/x/y?a=b');
+      __protectedHistory: {
+        push: function(fragment) {},
+        replace: function(fragment) {
+          assert.strictEqual(fragment, '/x/y?a=b');
         }
       }
     });
@@ -720,9 +720,9 @@
     location.replace('http://example.com/root?a=b#x/y');
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function() {},
-        replaceState: function() { assert.ok(false); }
+      __protectedHistory: {
+        push: function(fragment) {},
+        replace: function(fragment) { assert.ok(false); }
       }
     });
     Backbone.history.start({
@@ -764,9 +764,9 @@
     Backbone.history.stop();
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function(state, title, url) {
-          assert.strictEqual(url, '/root');
+      __protectedHistory: {
+        push: function(fragment) {
+          assert.strictEqual(fragment, '/');
         }
       }
     });
@@ -780,9 +780,9 @@
     Backbone.history.stop();
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function(state, title, url) {
-          assert.strictEqual(url, '/');
+      __protectedHistory: {
+        push: function(fragment) {
+          assert.strictEqual(fragment, '/');
         }
       }
     });
@@ -796,9 +796,9 @@
     Backbone.history.stop();
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function(state, title, url) {
-          assert.strictEqual(url, '/root?x=1');
+      __protectedHistory: {
+        push: function(fragment) {
+          assert.strictEqual(fragment, '/?x=1');
         }
       }
     });
@@ -812,8 +812,8 @@
     Backbone.history.stop();
     Backbone.history = _.extend(new Backbone.History, {
       location: location,
-      history: {
-        pushState: function(state, title, url) {
+      __protectedHistory: {
+        push: function(url) {
           assert.strictEqual(url, '/path?query#hash');
         }
       }
