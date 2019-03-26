@@ -1673,8 +1673,8 @@
       }
       if (!callback) callback = this[name];
       var router = this;
-      Backbone.history.route(route, function(fragment) {
-        var args = router._extractParameters(route, fragment);
+      Backbone.history.route(route, function(fragment, state) {
+        var args = router._extractParameters(route, fragment).concat(state);
         if (router.execute(callback, args, name) !== false) {
           router.trigger.apply(router, ['route:' + name].concat(args));
           router.trigger('route', name, args);
@@ -1691,8 +1691,8 @@
     },
 
     // Simple proxy to `Backbone.history` to save a fragment into the history.
-    navigate: function(fragment, options) {
-      Backbone.history.navigate(fragment, options);
+    navigate: function(fragment, options, state) {
+      Backbone.history.navigate(fragment, options, state);
       return this;
     },
 
@@ -1946,19 +1946,19 @@
 
       if (current === this.fragment) return false;
       if (this.iframe) this.navigate(current);
-      this.loadUrl();
+      this.loadUrl(null, e.state);
     },
 
     // Attempt to load the current URL fragment. If a route succeeds with a
     // match, returns `true`. If no defined routes matches the fragment,
     // returns `false`.
-    loadUrl: function(fragment) {
+    loadUrl: function(fragment, state) {
       // If the root doesn't match, no routes can match either.
       if (!this.matchRoot()) return false;
       fragment = this.fragment = this.getFragment(fragment);
       return _.some(this.handlers, function(handler) {
         if (handler.route.test(fragment)) {
-          handler.callback(fragment);
+          handler.callback(fragment, state || {});
           return true;
         }
       });
@@ -1971,7 +1971,7 @@
     // The options object can contain `trigger: true` if you wish to have the
     // route callback be fired (not usually desirable), or `replace: true`, if
     // you wish to modify the current URL without adding an entry to the history.
-    navigate: function(fragment, options) {
+    navigate: function(fragment, options, state) {
       if (!History.started) return false;
       if (!options || options === true) options = {trigger: !!options};
 
@@ -1996,7 +1996,7 @@
 
       // If pushState is available, we use it to set the fragment as a real URL.
       if (this._usePushState) {
-        this.history[options.replace ? 'replaceState' : 'pushState']({}, document.title, url);
+        this.history[options.replace ? 'replaceState' : 'pushState'](state || {}, document.title, url);
 
       // If hash changes haven't been explicitly disabled, update the hash
       // fragment to store history.
@@ -2021,7 +2021,7 @@
       } else {
         return this.location.assign(url);
       }
-      if (options.trigger) return this.loadUrl(fragment);
+      if (options.trigger) return this.loadUrl(fragment, state);
     },
 
     // Update the hash location, either replacing the current entry, or adding
