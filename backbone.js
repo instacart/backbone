@@ -1994,6 +1994,28 @@
       if (this.fragment === decodedFragment) return;
       this.fragment = decodedFragment;
 
+      featuredItemOverride: {
+        if (!state || !state.moduleFetchParams) {
+          break featuredItemOverride;
+        }
+
+        var featuredItem = state.moduleFetchParams.featured_item;
+
+        if (!featuredItem || !featuredItem.id) {
+          break featuredItemOverride;
+        }
+
+        // prevent `null`, which causes puma to crash
+        delete state.moduleFetchParams.featured_item;
+
+        var featuredItemKeys = Object.keys(featuredItem);
+        for (var i = 0, key, newKey; i < featuredItemKeys.length; i++) {
+          key = featuredItemKeys[i];
+          newKey = 'featured_item[' + featuredItem.id + '][' + key + ']';
+          state.moduleFetchParams[newKey] = featuredItem[key];
+        }
+      }
+
       // If pushState is available, we use it to set the fragment as a real URL.
       if (this._usePushState) {
         this.history[options.replace ? 'replaceState' : 'pushState'](state || {}, document.title, url);
