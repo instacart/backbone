@@ -5,6 +5,7 @@
   var emulateHTTP = Backbone.emulateHTTP;
   var emulateJSON = Backbone.emulateJSON;
   var history = window.history;
+  var __protectedHistory = window.__do_not_use_me_history = {}; // eslint-disable-line
   var pushState = history.pushState;
   var replaceState = history.replaceState;
 
@@ -15,6 +16,7 @@
 
     // We never want to actually call these during tests.
     history.pushState = history.replaceState = function() {};
+    __protectedHistory.push = __protectedHistory.replace = function() {};
 
     // Capture ajax settings for comparison.
     Backbone.ajax = function(settings) {

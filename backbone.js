@@ -1750,6 +1750,7 @@
     if (typeof window !== 'undefined') {
       this.location = window.location;
       this.history = window.history;
+      this.__protectedHistory = window.__do_not_use_me_history;
     }
   };
 
@@ -1984,6 +1985,7 @@
         rootPath = rootPath.slice(0, -1) || '/';
       }
       var url = rootPath + fragment;
+      var uncleanFragment = fragment;
 
       // Strip the fragment of the query and hash for matching.
       fragment = fragment.replace(pathStripper, '');
@@ -1996,7 +1998,7 @@
 
       // If pushState is available, we use it to set the fragment as a real URL.
       if (this._usePushState) {
-        this.history[options.replace ? 'replaceState' : 'pushState'](state || {}, document.title, url);
+        this.__protectedHistory[options.replace ? 'replace' : 'push']('/' + uncleanFragment, state);
 
       // If hash changes haven't been explicitly disabled, update the hash
       // fragment to store history.
