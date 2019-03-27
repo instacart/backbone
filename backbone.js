@@ -1946,7 +1946,7 @@
 
       if (current === this.fragment) return false;
       if (this.iframe) this.navigate(current);
-      this.loadUrl(null, e.state);
+      this.loadUrl(null, e && e.state);
     },
 
     // Attempt to load the current URL fragment. If a route succeeds with a
