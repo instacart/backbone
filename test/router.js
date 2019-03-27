@@ -608,6 +608,29 @@
     });
     Backbone.history.navigate('fragment');
   });
+  
+  QUnit.test('navigate with state object', function(assert) {
+    assert.expect(2);
+    Backbone.history.stop();
+    location.replace('http://instacart.com/');
+    Backbone.history = _.extend(new Backbone.History, {
+      location: location,
+      history: {
+        pushState: function(state, title, url) {
+          assert.strictEqual(url, '/fragment');
+          assert.strictEqual(state && state.stateKey, 'stateValue');
+        }
+      }
+    });
+    Backbone.history.start({
+      pushState: true,
+      root: '',
+      hashChange: false
+    });
+    Backbone.history.navigate('fragment', {}, {
+      stateKey: 'stateValue'
+    });
+  });
 
   QUnit.test('Transition from pushState to hashChange.', function(assert) {
     assert.expect(1);
