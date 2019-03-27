@@ -609,6 +609,28 @@
     Backbone.history.navigate('fragment');
   });
 
+  QUnit.test('navigate with state object', function(assert) {
+    assert.expect(1);
+    Backbone.history.stop();
+    location.replace('http://instacart.com/');
+    Backbone.history = _.extend(new Backbone.History, {
+      location: location,
+      __protectedHistory: {
+        push: function(fragment, state) {
+          assert.strictEqual(state && state.stateKey, 'stateValue');
+        }
+      }
+    });
+    Backbone.history.start({
+      pushState: true,
+      root: '',
+      hashChange: false
+    });
+    Backbone.history.navigate('fragment', {trigger: true}, {
+      stateKey: 'stateValue'
+    });
+  });
+
   QUnit.test('Transition from pushState to hashChange.', function(assert) {
     assert.expect(1);
     Backbone.history.stop();
@@ -686,7 +708,7 @@
     assert.expect(2);
     router.on('route', function(name, args) {
       assert.strictEqual(name, 'routeEvent');
-      assert.deepEqual(args, ['x', null]);
+      assert.deepEqual(args, ['x', null, {}]);
     });
     location.replace('http://example.com#route-event/x');
     Backbone.history.checkUrl();
@@ -936,7 +958,7 @@
       foo: function() {},
       execute: function(callback, args, name) {
         assert.strictEqual(callback, this.foo);
-        assert.deepEqual(args, ['123', 'x=y']);
+        assert.deepEqual(args, ['123', 'x=y', {}]);
         assert.strictEqual(name, 'foo');
       }
     });
